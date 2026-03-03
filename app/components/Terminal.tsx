@@ -459,7 +459,10 @@ export default function Terminal() {
           ))}
 
           {/* Active input line */}
-          <div className="flex items-center gap-1 md:gap-2 mt-1">
+          <form
+            className="flex items-center gap-1 md:gap-2 mt-1"
+            onSubmit={(e) => { e.preventDefault(); execute(input); setInput(""); }}
+          >
             <span className="text-green-400 shrink-0 select-none">
               <span className="hidden md:inline">{host}:</span>{shortPrompt}
             </span>
@@ -474,7 +477,7 @@ export default function Terminal() {
               autoCorrect="off"
               autoCapitalize="off"
             />
-          </div>
+          </form>
           <div ref={bottomRef} />
         </div>
       </div>
