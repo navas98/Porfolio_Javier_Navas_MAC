@@ -67,6 +67,10 @@ export default function Terminal() {
     bottomRef.current?.scrollIntoView({ behavior: "smooth" });
   }, [lines]);
 
+  useEffect(() => {
+    if (window.innerWidth >= 768) inputRef.current?.focus();
+  }, []);
+
   // ── Line factory ───────────────────────────────────────────────────────────
 
   function push(...newLines: Omit<Line, "id">[]) {
@@ -426,17 +430,18 @@ export default function Terminal() {
 
   // ── Render ─────────────────────────────────────────────────────────────────
 
+  const shortPrompt = `${path}$`;
+
   return (
     <div
-      className="min-h-screen  flex items-center justify-center p-4 md:p-8"
+      className="flex md:min-h-screen md:items-center md:justify-center md:p-4 lg:p-8"
       onClick={() => inputRef.current?.focus()}
     >
       <div
-        className="w-full max-w-5xl rounded-xl border border-white/10 shadow-2xl shadow-black/60 flex flex-col overflow-hidden bg-[#111111]"
-        style={{ height: "85vh" }}
+        className="w-full md:max-w-5xl md:rounded-xl md:border border-white/10 shadow-2xl shadow-black/60 flex flex-col overflow-hidden bg-[#111111] h-[100svh] md:h-[85vh]"
       >
         {/* ── Title bar ── */}
-        <div className="shrink-0 flex items-center gap-2 px-4 py-3 bg-[#1c1c1c] border-b border-white/5 select-none">
+        <div className="shrink-0 flex items-center gap-2 px-3 md:px-4 py-2 md:py-3 bg-[#1c1c1c] border-b border-white/5 select-none">
           <div className="flex items-center gap-1.5">
             <div className="w-3 h-3 rounded-full bg-[#ff5f56]" />
             <div className="w-3 h-3 rounded-full bg-[#ffbd2e]" />
@@ -448,15 +453,16 @@ export default function Terminal() {
         </div>
 
         {/* ── Output area ── */}
-        <div className="flex-1 overflow-y-auto p-5 font-mono text-sm leading-relaxed">
+        <div className="flex-1 overflow-y-auto p-3 md:p-5 font-mono text-xs md:text-sm leading-relaxed">
           {lines.map((line) => (
             <RenderLine key={line.id} line={line} />
           ))}
 
           {/* Active input line */}
-          <div className="flex items-center gap-2 mt-1">
-            <span className="text-green-400 shrink-0 select-none">{promptStr}</span>
-            <span className="text-gray-600 select-none"> </span>
+          <div className="flex items-center gap-1 md:gap-2 mt-1">
+            <span className="text-green-400 shrink-0 select-none">
+              <span className="hidden md:inline">{host}:</span>{shortPrompt}
+            </span>
             <input
               ref={inputRef}
               value={input}
@@ -467,7 +473,6 @@ export default function Terminal() {
               autoComplete="off"
               autoCorrect="off"
               autoCapitalize="off"
-              autoFocus
             />
           </div>
           <div ref={bottomRef} />
@@ -495,7 +500,10 @@ function RenderLine({ line }: { line: Line }) {
 
   if (line.type === "ascii") {
     return (
-      <pre className="text-cyan-400 text-xs leading-tight overflow-x-auto mb-1 select-none">
+      <pre
+        className="text-cyan-400 leading-tight overflow-x-auto mb-1 select-none"
+        style={{ fontSize: "clamp(5px, 2vw, 12px)" }}
+      >
         {ASCII}
       </pre>
     );
