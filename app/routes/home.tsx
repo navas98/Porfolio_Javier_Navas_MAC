@@ -1,5 +1,5 @@
 import type { Route } from "./+types/home";
-import Terminal from "../components/Terminal";
+import Desktop from "../components/Desktop";
 import { textos } from "../textos";
 
 export function meta({}: Route.MetaArgs) {
@@ -10,5 +10,5 @@ export function meta({}: Route.MetaArgs) {
 }
 
 export default function Home() {
-  return <Terminal />;
+  return <Desktop />;
 }

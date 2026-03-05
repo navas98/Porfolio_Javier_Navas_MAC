@@ -13,8 +13,12 @@ type Line =
   | { id: number; type: "text"; text: string; color?: Color }
   | { id: number; type: "link"; label: string; url: string };
 
-// Omit distribuido sobre la unión (el Omit estándar no distribuye)
-type LineInput = Line extends { id: number } & infer R ? R : never;
+type LineInput =
+  | { type: "ascii" }
+  | { type: "blank" }
+  | { type: "command"; prompt: string; cmd: string }
+  | { type: "text"; text: string; color?: Color }
+  | { type: "link"; label: string; url: string };
 
 // ─── ASCII art ───────────────────────────────────────────────────────────────
 
@@ -50,7 +54,7 @@ const BOOT: Line[] = [
 
 // ─── Component ───────────────────────────────────────────────────────────────
 
-export default function Terminal() {
+export default function Terminal({ embedded = false }: { embedded?: boolean }) {
   const [lines, setLines] = useState<Line[]>(BOOT);
   const [input, setInput] = useState("");
   const [path, setPath] = useState("~");
@@ -73,7 +77,7 @@ export default function Terminal() {
 
   // ── Line factory ───────────────────────────────────────────────────────────
 
-  function push(...newLines: Omit<Line, "id">[]) {
+  function push(...newLines: LineInput[]) {
     setLines((prev) => [
       ...prev,
       ...newLines.map((l) => ({ ...l, id: nextId() } as Line)),
@@ -115,6 +119,8 @@ export default function Terminal() {
       case "about":      cmdAbout();             break;
       case "dir":
       case "ls":         cmdDir();               break;
+      case "cat":        cmdCat(arg);            break;
+      case "open":       cmdOpen(arg);           break;
       case "cd":         cmdCd(arg);             break;
       case "ping":       cmdPing(arg);           break;
       case "git":
@@ -123,7 +129,6 @@ export default function Terminal() {
           : push({ type: "text", text: `git: '${arg}' no reconocido`, color: "red" }, { type: "blank" });
         break;
       case "clear":      setLines([...BOOT]);    break;
-      case "bot_javier": cmdBot();               break;
       default:
         push(
           { type: "text", text: `bash: ${command}: comando no encontrado`, color: "red" },
@@ -142,13 +147,14 @@ export default function Terminal() {
       { type: "text", text: SEP, color: "gray" },
       { type: "text", text: "  about               → Sobre mí", color: "white" },
       { type: "text", text: "  whoami              → Quién soy", color: "white" },
-      { type: "text", text: "  dir                 → Listar directorio actual", color: "white" },
+      { type: "text", text: "  ls / dir            → Listar directorio actual", color: "white" },
       { type: "text", text: "  cd <carpeta>        → Entrar en una carpeta", color: "white" },
       { type: "text", text: "  cd ..               → Volver atrás", color: "white" },
+      { type: "text", text: "  cat <archivo.txt>   → Leer un archivo", color: "white" },
+      { type: "text", text: "  open cv.pdf         → Abrir / descargar el CV", color: "white" },
       { type: "text", text: "  ping <proyecto>     → Info + URL de un proyecto", color: "white" },
       { type: "text", text: "  git init            → Mi cuenta de GitHub", color: "white" },
       { type: "text", text: "  clear               → Limpiar terminal", color: "white" },
-      { type: "text", text: "  bot_javier          → Chatbot IA sobre mí  ✦", color: "cyan" },
       { type: "blank" }
     );
   }
@@ -185,7 +191,7 @@ export default function Terminal() {
     if (path === "~/proyectos") {
       push(
         { type: "blank" },
-        { type: "text", text: "  " + proyectos.map((p) => p.slug + "/").join("    "), color: "cyan" },
+        { type: "text", text: "  " + proyectos.map((p) => p.slug + ".txt").join("    "), color: "white" },
         { type: "blank" }
       );
       return;
@@ -210,7 +216,7 @@ export default function Terminal() {
     if (path === "~/estudios") {
       push(
         { type: "blank" },
-        { type: "text", text: "  " + estudios.map((e) => e.slug + "/").join("    "), color: "cyan" },
+        { type: "text", text: "  " + estudios.map((e) => e.slug + ".txt").join("    "), color: "white" },
         { type: "blank" }
       );
       return;
@@ -224,7 +230,7 @@ export default function Terminal() {
           { type: "blank" },
           { type: "text", text: `  ${e.titulo}`, color: "yellow" },
           { type: "text", text: `  ${e.periodo}`, color: "cyan" },
-          { type: "text", text: `  ${e.centro}`, color: "blue" },
+          { type: "text", text: `  ${e.centro}`, color: "white" },
           
           { type: "blank" }
         );
@@ -235,7 +241,7 @@ export default function Terminal() {
     if (path === "~/trabajos") {
       push(
         { type: "blank" },
-        { type: "text", text: "  " + trabajos.map((t) => t.slug + "/").join("    "), color: "cyan" },
+        { type: "text", text: "  " + trabajos.map((t) => t.slug + ".txt").join("    "), color: "white" },
         { type: "blank" }
       );
       return;
@@ -321,6 +327,92 @@ export default function Terminal() {
     );
   }
 
+  function cmdOpen(target: string) {
+    if (!target) {
+      push({ type: "text", text: "uso: open <archivo>", color: "yellow" }, { type: "blank" });
+      return;
+    }
+
+    if (target === "cv.pdf") {
+      push(
+        { type: "blank" },
+        { type: "text", text: "  Abriendo cv.pdf...", color: "green" },
+        { type: "link", label: "  → /cv.pdf", url: "/cv.pdf" },
+        { type: "blank" }
+      );
+      window.open("/cv.pdf", "_blank");
+      return;
+    }
+
+    push(
+      { type: "text", text: `open: ${target}: No existe el archivo`, color: "red" },
+      { type: "blank" }
+    );
+  }
+
+  function cmdCat(target: string) {
+    if (!target) {
+      push({ type: "text", text: "uso: cat <archivo.txt>", color: "yellow" }, { type: "blank" });
+      return;
+    }
+
+    const slug = target.endsWith(".txt") ? target.slice(0, -4) : target;
+    const { proyectos, estudios, trabajos } = textos.terminal;
+
+    if (path === "~/proyectos") {
+      const p = proyectos.find((x) => x.slug === slug);
+      if (p) {
+        push(
+          { type: "blank" },
+          { type: "text", text: `  ${p.name}`, color: "yellow" },
+          { type: "text", text: SEP, color: "gray" },
+          { type: "text", text: `  Descripción: ${p.description}`, color: "white" },
+          { type: "text", text: `  Tech:        ${p.tech.join(" · ")}`, color: "cyan" },
+          ...(p.url ? [{ type: "link" as const, label: `  URL:         ${p.url}`, url: p.url }] : []),
+          { type: "blank" }
+        );
+        return;
+      }
+    }
+
+    if (path === "~/trabajos") {
+      const t = trabajos.find((x) => x.slug === slug);
+      if (t) {
+        push(
+          { type: "blank" },
+          { type: "text", text: `  ${t.empresa}`, color: "yellow" },
+          { type: "text", text: SEP, color: "gray" },
+          { type: "text", text: `  Rol:         ${t.rol}`, color: "cyan" },
+          { type: "text", text: `  Período:     ${t.periodo}`, color: "white" },
+          { type: "text", text: `  Descripción: ${t.descripcion}`, color: "white" },
+          { type: "blank" }
+        );
+        return;
+      }
+    }
+
+    if (path === "~/estudios") {
+      const e = estudios.find((x) => x.slug === slug);
+      if (e) {
+        push(
+          { type: "blank" },
+          { type: "text", text: `  ${e.titulo}`, color: "green" },
+          { type: "text", text: SEP, color: "gray" },
+          { type: "text", text: `  Período:     ${e.periodo}`, color: "cyan" },
+          { type: "text", text: `  Centro:      ${e.centro}`, color: "white" },
+          { type: "blank" }
+        );
+        return;
+      }
+    }
+
+    push(
+      { type: "text", text: `cat: ${target}: No existe el archivo`, color: "red" },
+      { type: "text", text: "Usa `ls` para ver los archivos disponibles.", color: "gray" },
+      { type: "blank" }
+    );
+  }
+
   function cmdGitInit() {
     push(
       { type: "blank" },
@@ -332,18 +424,9 @@ export default function Terminal() {
     );
   }
 
-  function cmdBot() {
-    push(
-      { type: "blank" },
-      { type: "text", text: "Iniciando bot_javier...", color: "cyan" },
-      { type: "text", text: "⚠  Próximamente disponible.", color: "yellow" },
-      { type: "blank" }
-    );
-  }
-
   // ── Tab completion ─────────────────────────────────────────────────────────
 
-  const COMMANDS = ["about", "bot_javier", "cd", "clear", "dir", "git init", "help", "ls", "ping", "whoami"];
+  const COMMANDS = ["about", "cat", "cd", "clear", "dir", "git init", "help", "ls", "open", "ping", "whoami"];
 
   function getSubdirs(currentPath: string): string[] {
     const { proyectos, estudios, trabajos } = textos.terminal;
@@ -369,6 +452,19 @@ export default function Terminal() {
     if (command === "cd") {
       const candidates = [...getSubdirs(path), ".."];
       return candidates.filter((d) => d.startsWith(partial));
+    }
+
+    if (command === "open") {
+      return ["cv.pdf"].filter((f) => f.startsWith(partial));
+    }
+
+    if (command === "cat") {
+      const { proyectos, estudios, trabajos } = textos.terminal;
+      let files: string[] = [];
+      if (path === "~/proyectos")  files = proyectos.map((p) => p.slug + ".txt");
+      if (path === "~/trabajos")   files = trabajos.map((t) => t.slug + ".txt");
+      if (path === "~/estudios")   files = estudios.map((e) => e.slug + ".txt");
+      return files.filter((f) => f.startsWith(partial));
     }
 
     if (command === "ping") {
@@ -432,14 +528,51 @@ export default function Terminal() {
 
   const shortPrompt = `${path}$`;
 
+  const outputArea = (
+    <div className="flex-1 overflow-y-auto p-3 md:p-5 font-mono text-xs md:text-sm leading-relaxed">
+      {lines.map((line) => (
+        <RenderLine key={line.id} line={line} />
+      ))}
+      <form
+        className="flex items-center gap-1 md:gap-2 mt-1"
+        onSubmit={(e) => { e.preventDefault(); execute(input); setInput(""); }}
+      >
+        <span className="text-green-400 shrink-0 select-none">
+          <span className="hidden md:inline">{host}:</span>{shortPrompt}
+        </span>
+        <input
+          ref={inputRef}
+          value={input}
+          onChange={(e) => setInput(e.target.value)}
+          onKeyDown={handleKey}
+          className="flex-1 bg-transparent text-gray-100 outline-none caret-cyan-400 min-w-0"
+          spellCheck={false}
+          autoComplete="off"
+          autoCorrect="off"
+          autoCapitalize="off"
+        />
+      </form>
+      <div ref={bottomRef} />
+    </div>
+  );
+
+  if (embedded) {
+    return (
+      <div
+        className="flex flex-col h-full bg-[#111111]"
+        onClick={() => inputRef.current?.focus()}
+      >
+        {outputArea}
+      </div>
+    );
+  }
+
   return (
     <div
       className="flex md:min-h-screen md:items-center md:justify-center md:p-4 lg:p-8"
       onClick={() => inputRef.current?.focus()}
     >
-      <div
-        className="w-full md:max-w-5xl md:rounded-xl md:border border-white/10 shadow-2xl shadow-black/60 flex flex-col overflow-hidden bg-[#111111] h-[100svh] md:h-[85vh]"
-      >
+      <div className="w-full md:max-w-5xl md:rounded-xl md:border border-white/10 shadow-2xl shadow-black/60 flex flex-col overflow-hidden bg-[#111111] h-[100svh] md:h-[85vh]">
         {/* ── Title bar ── */}
         <div className="shrink-0 flex items-center gap-2 px-3 md:px-4 py-2 md:py-3 bg-[#1c1c1c] border-b border-white/5 select-none">
           <div className="flex items-center gap-1.5">
@@ -451,35 +584,7 @@ export default function Terminal() {
             visitor@javier.dev — terminal
           </span>
         </div>
-
-        {/* ── Output area ── */}
-        <div className="flex-1 overflow-y-auto p-3 md:p-5 font-mono text-xs md:text-sm leading-relaxed">
-          {lines.map((line) => (
-            <RenderLine key={line.id} line={line} />
-          ))}
-
-          {/* Active input line */}
-          <form
-            className="flex items-center gap-1 md:gap-2 mt-1"
-            onSubmit={(e) => { e.preventDefault(); execute(input); setInput(""); }}
-          >
-            <span className="text-green-400 shrink-0 select-none">
-              <span className="hidden md:inline">{host}:</span>{shortPrompt}
-            </span>
-            <input
-              ref={inputRef}
-              value={input}
-              onChange={(e) => setInput(e.target.value)}
-              onKeyDown={handleKey}
-              className="flex-1 bg-transparent text-gray-100 outline-none caret-cyan-400 min-w-0"
-              spellCheck={false}
-              autoComplete="off"
-              autoCorrect="off"
-              autoCapitalize="off"
-            />
-          </form>
-          <div ref={bottomRef} />
-        </div>
+        {outputArea}
       </div>
     </div>
   );
