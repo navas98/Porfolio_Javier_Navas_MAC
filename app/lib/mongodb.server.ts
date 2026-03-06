@@ -2,7 +2,8 @@ import { MongoClient } from "mongodb";
 import * as dotenv from "dotenv";
 import { resolve } from "path";
 
-dotenv.config({ path: resolve(process.cwd(), ".env") });
+// En local carga el .env; en Vercel/producción las vars ya están en process.env
+dotenv.config({ path: resolve(process.cwd(), ".env"), override: false });
 
 let cachedClient: MongoClient | null = null;
 
