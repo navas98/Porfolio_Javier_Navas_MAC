@@ -22,7 +22,8 @@ type LineInput =
 
 // ─── ASCII art ───────────────────────────────────────────────────────────────
 
-const ASCII = `     ██╗ █████╗ ██╗   ██╗██╗███████╗██████╗
+const ASCII = `
+     ██╗ █████╗ ██╗   ██╗██╗███████╗██████╗
      ██║██╔══██╗██║   ██║██║██╔════╝██╔══██╗
      ██║███████║██║   ██║██║█████╗  ██████╔╝
 ██   ██║██╔══██║╚██╗ ██╔╝██║██╔══╝  ██╔══██╗
@@ -129,6 +130,7 @@ export default function Terminal({ embedded = false }: { embedded?: boolean }) {
           : push({ type: "text", text: `git: '${arg}' no reconocido`, color: "red" }, { type: "blank" });
         break;
       case "clear":      setLines([...BOOT]);    break;
+      case "bot_javier": cmdBot();               break;
       default:
         push(
           { type: "text", text: `bash: ${command}: comando no encontrado`, color: "red" },
@@ -155,6 +157,7 @@ export default function Terminal({ embedded = false }: { embedded?: boolean }) {
       { type: "text", text: "  ping <proyecto>     → Info + URL de un proyecto", color: "white" },
       { type: "text", text: "  git init            → Mi cuenta de GitHub", color: "white" },
       { type: "text", text: "  clear               → Limpiar terminal", color: "white" },
+      { type: "text", text: "  bot_javier          → Chatbot IA sobre mí  ✦", color: "cyan" },
       { type: "blank" }
     );
   }
@@ -424,9 +427,18 @@ export default function Terminal({ embedded = false }: { embedded?: boolean }) {
     );
   }
 
+  function cmdBot() {
+    push(
+      { type: "blank" },
+      { type: "text", text: "Iniciando bot_javier...", color: "cyan" },
+      { type: "text", text: "⚠  Próximamente disponible.", color: "yellow" },
+      { type: "blank" }
+    );
+  }
+
   // ── Tab completion ─────────────────────────────────────────────────────────
 
-  const COMMANDS = ["about", "cat", "cd", "clear", "dir", "git init", "help", "ls", "open", "ping", "whoami"];
+  const COMMANDS = ["about", "bot_javier", "cat", "cd", "clear", "dir", "git init", "help", "ls", "open", "ping", "whoami"];
 
   function getSubdirs(currentPath: string): string[] {
     const { proyectos, estudios, trabajos } = textos.terminal;
@@ -549,7 +561,7 @@ export default function Terminal({ embedded = false }: { embedded?: boolean }) {
           spellCheck={false}
           autoComplete="off"
           autoCorrect="off"
-          autoCapitalize="off"
+          autoCapitalize="none"
         />
       </form>
       <div ref={bottomRef} />

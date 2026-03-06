@@ -1,3 +1,67 @@
+// ─── Calendario ──────────────────────────────────────────────────────────────
+
+export type CalCompany = "everis" | "inetum" | "nfq";
+export type CalCategory = CalCompany | "personal";
+
+export interface CalEvent {
+  id: string;
+  title: string;
+  category: CalCategory;
+  problema: string;
+  solucion: string;
+  aprendizaje: string;
+  start: Date;
+  end?: Date;
+  color: string;
+}
+
+export const calendarEvents: CalEvent[] = [
+  {
+    id: "everis",
+    title: "Prácticas — Everis",
+    category: "everis",
+    problema: "Gestión manual de bajas de líneas móviles de Orange, proceso lento y propenso a errores.",
+    solucion: "Desarrollé un proceso automatizado que detectaba las bajas y ejecutaba las acciones necesarias sin intervención manual.",
+    aprendizaje: "Primera toma de contacto con entornos empresariales reales y automatización de procesos de negocio.",
+    start: new Date(2018, 2, 1),
+    end: new Date(2018, 5, 30),
+    color: "#07f1b7",
+  },
+  {
+    id: "optimus",
+    title: "Optimus Price — Inetum",
+    category: "inetum",
+    problema: "Los precios se fijaban sin un modelo cuantitativo claro, lo que generaba pérdidas de margen.",
+    solucion: "Construí pipelines de análisis y modelado de datos para identificar patrones de precio óptimos.",
+    aprendizaje: "Aprendí a estructurar proyectos de datos orientados a negocio y a comunicar insights a stakeholders no técnicos.",
+    start: new Date(2024, 9, 1),
+    end: new Date(2025, 6, 31),
+    color: "#818cf8",
+  },
+  
+  {
+    id: "Incorporacion_NFQ",
+    title: "Incorporación a NFQ - New Joiner",
+    category: "nfq",
+    problema: "Inicio de una nueva etapa profesional con el reto de adaptarme a una nueva empresa, conocer la cultura organizacional, los procesos internos y establecer relaciones con el equipo.",
+    solucion: "La empresa organizó un onboarding en una casa rural con otros compañeros para facilitar la interacción y el conocimiento del equipo.",
+    aprendizaje: "La experiencia permitió entender la importancia de la comunicación y la confianza para colaborar eficazmente en proyectos técnicos.",
+    start: new Date(2025, 9, 27),
+    end: new Date(2025, 10, 31),
+    color: "#c084fc",
+  },
+  
+  
+];
+
+export const calendarCompanies: { key: CalCompany; label: string; color: string }[] = [
+  { key: "everis", label: "Everis", color: "#07f1b7" },
+  { key: "inetum", label: "Inetum", color: "#818cf8" },
+  { key: "nfq",    label: "NFQ",    color: "#c084fc" },
+];
+
+// ─────────────────────────────────────────────────────────────────────────────
+
 export const textos = {
   meta: {
     title: "Portfolio · Javier Navas",
@@ -67,19 +131,13 @@ export const textos = {
         url: "",
       },
       {
-        slug: "Optimus_Price",
+        slug: "Incorporacion a NFQ - New Joiner",
         name: "Optimus Price pra Inetum",
         description: "Es un proyecto orientado a la optimización de precios mediante análisis y modelado de datos para mejorar la rentabilidad. Participé en el tratamiento, estructuración y explotación de datos para apoyar la toma de decisiones basada en análisis cuantitativo.",
         tech: ["Python",  "SQL","PowerBi"],
         url: "",
       },
-       {
-        slug: "Marketin Mix",
-        name: "Marketing Mix pra Inetum",
-        description: "Marketing Mix es una plataforma de Marketing Mix Modeling (MMM) que analiza el impacto de cada canal en las ventas y optimiza la asignación presupuestaria mediante modelos estadísticos.",
-        tech: ["Python",  "FastAPI","Docker / Cloud Run"],
-        url: "",
-      }
+       
     ],
 
     // ── Estudios ─────────────────────────────────────────────────────────────

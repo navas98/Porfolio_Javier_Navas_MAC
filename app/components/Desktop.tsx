@@ -7,11 +7,13 @@ import Dock from "./Dock";
 import Terminal from "./Terminal";
 import PhotoGallery from "./PhotoGallery";
 import PhotoViewer from "./PhotoViewer";
+import Calendar from "./Calendar";
 import { textos } from "../textos";
+import type { NfqEventRaw } from "../lib/mongodb.server";
 
 // ─── Types ────────────────────────────────────────────────────────────────────
 
-type WinId = "terminal" | "proyectos" | "experiencia" | "estudios" | "fotos";
+type WinId = "terminal" | "proyectos" | "experiencia" | "estudios" | "fotos" | "calendario";
 type OpenDocFn = (title: string, content: ReactNode) => void;
 
 interface WinState {
@@ -279,11 +281,21 @@ const INITIAL_WINDOWS: WinState[] = [
     width: 700,
     height: 480,
   },
+  {
+    id: "calendario",
+    title: "📅  Calendario",
+    isOpen: false,
+    isMinimized: false,
+    zIndex: 10,
+    defaultPosition: { x: 150, y: 45 },
+    width: 820,
+    height: 520,
+  },
 ];
 
 // ─── Desktop ─────────────────────────────────────────────────────────────────
 
-export default function Desktop() {
+export default function Desktop({ nfqEvents = [] }: { nfqEvents?: NfqEventRaw[] }) {
   const [windows, setWindows]       = useState<WinState[]>(INITIAL_WINDOWS);
   const [dynWindows, setDynWindows] = useState<DynWin[]>([]);
   const topZRef = useRef(10);
@@ -350,6 +362,7 @@ export default function Desktop() {
       case "experiencia": return <ExperienciaContent onOpenDoc={openDoc} />;
       case "estudios":    return <EstudiosContent onOpenDoc={openDoc} />;
       case "fotos":       return <PhotoGallery onOpenPhoto={(foto) => openDoc(foto, <PhotoViewer src={`/fotos/${foto}`} name={foto} />)} />;
+      case "calendario":  return <Calendar nfqEvents={nfqEvents} />;
     }
   }
 
@@ -368,6 +381,7 @@ export default function Desktop() {
     { id: "experiencia",icon: "💼",  label: "Experiencia", onClick: () => openWindow("experiencia"), isOpen: windows.find((w) => w.id === "experiencia")?.isOpen },
     { id: "estudios",   icon: "🎓",  label: "Estudios",    onClick: () => openWindow("estudios"),    isOpen: windows.find((w) => w.id === "estudios")?.isOpen },
     { id: "fotos",      icon: "📷",  label: "Fotos",       onClick: () => openWindow("fotos"),       isOpen: windows.find((w) => w.id === "fotos")?.isOpen },
+    { id: "calendario", icon: "📅",  label: "Calendario",  onClick: () => openWindow("calendario"),  isOpen: windows.find((w) => w.id === "calendario")?.isOpen },
   ];
 
   return (
