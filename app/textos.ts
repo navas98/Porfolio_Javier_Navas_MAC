@@ -137,7 +137,21 @@ export const textos = {
         tech: ["Python",  "SQL","PowerBi"],
         url: "",
       },
-       
+      {
+        slug: "Proyecto_Personal",
+        name: "Proyecto Personal",
+        description: "",
+        tech: [],
+        url: "",
+        type: "folder" as const,
+        files: [
+          { slug: "flujo_diario", name: "flujo_diario", ext: "gantt", description: "", tech: [] },
+          { slug: "Automata_git", name: "Automata",     ext: "git",   description: "", tech: [] },
+          { slug: "creador_imagenes", name: "creador_imagenes", ext: "html", description: "", tech: [] },
+          { slug: "automata_md",  name: "automata",     ext: "md",    description: "", tech: [] },
+        ],
+      },
+
     ],
 
     // ── Estudios ─────────────────────────────────────────────────────────────
@@ -181,6 +195,68 @@ export const textos = {
         descripcion: "En NFQ Advisory Solutions trabajo en ingeniería de datos financiera, desarrollando y optimizando pipelines entre AWS y BigQuery. Automatizo procesos críticos, validaciones y migraciones de datos en entornos cloud.",
         proyectos:"Proyectos: {Automatización Francia, Pipeline PositionHoldings} "
         },
+    ],
+  },
+};
+
+// ─── Automata Git repo ────────────────────────────────────────────────────────
+
+export const automataRepo = {
+  name: "Automata",
+  fullName: "arcadiaxproject/Automata",
+  description: "Plan y arquitectura del proyecto Automata",
+  visibility: "private",
+  branch: "main",
+  createdAt: "08 mar 2026",
+  updatedAt: "08 mar 2026",
+  commits: [
+    { sha: "dc9b9fd", message: "Rename automata-plan.md to readme.md",              date: "08 mar 2026", verified: true  },
+    { sha: "c938ee2", message: "Actualizar plan: comparativa hardware y modelo IA",  date: "08 mar 2026", verified: false },
+    { sha: "3b44170", message: "Actualizar plan: comparativa hardware y modelo IA",  date: "08 mar 2026", verified: false },
+    { sha: "eca5654", message: "Añadir plan del proyecto Automata",                  date: "08 mar 2026", verified: false },
+  ],
+  readme: {
+    idea: "Crear un sistema autónomo que programe por sí solo, documente el proceso y lo suba a YouTube como demostración de habilidades técnicas.",
+    hardware: {
+      pc1: { nombre: "Mac Mini M4 Pro — 48GB RAM — 512GB SSD", rol: "Orquestar todo el sistema, correr la IA local, programar, generar informes, grabar y subir a YouTube." },
+      pc2: { nombre: "Torre con RTX 2060", rol: "Escuchar el repositorio Git y lanzar tests automáticos con cada push. Ya tiene montada una API que genera miniaturas para YouTube." },
+    },
+    stack: [
+      { clave: "Orquestador",       valor: "n8n (local en PC 1)" },
+      { clave: "IA local",          valor: "Ollama + Qwen3-Coder-Next 80B MoE (Q4) en PC 1" },
+      { clave: "Gestor de tareas",  valor: "Notion" },
+      { clave: "Control versiones", valor: "Git" },
+      { clave: "Informes",          valor: "Power BI + Notion" },
+      { clave: "Video",             valor: "Grabación de pantalla + API miniaturas (PC 2) + YouTube" },
+      { clave: "Capacidad",         valor: "Hasta 2 agentes simultáneos con 48GB RAM" },
+    ],
+    hardwareComparativa: [
+      { maquina: "Mac Mini M4 base",       ram: "16GB", precio: "~700€",   veredicto: "Insuficiente para modelos 32B+", elegido: false },
+      { maquina: "Mac Mini M4 Pro 24GB",   ram: "24GB", precio: "~1.400€", veredicto: "Justo para 1 agente 32B",        elegido: false },
+      { maquina: "Mac Mini M4 Pro 48GB",   ram: "48GB", precio: "~1.900€", veredicto: "Elegido",                        elegido: true  },
+      { maquina: "Mac Studio M4 Max 36GB", ram: "36GB", precio: "~2.300€", veredicto: "Más GPU, menos RAM",             elegido: false },
+      { maquina: "Mac Studio M4 Max 64GB", ram: "64GB", precio: "~2.800€", veredicto: "Excede presupuesto",             elegido: false },
+      { maquina: "Mac Studio M4 Ultra",    ram: "96GB+",precio: "~4.500€", veredicto: "Overkill",                       elegido: false },
+    ],
+    modeloComparativa: [
+      { modelo: "Qwen 2.5 Coder 32B",       ram: "~20GB", swe: "~50%", contexto: "128K", velocidad: "Rápido",      elegido: false },
+      { modelo: "DeepSeek R1 32B",           ram: "~20GB", swe: "~55%", contexto: "64K",  velocidad: "Medio",       elegido: false },
+      { modelo: "DeepSeek R1 70B",           ram: "~40GB", swe: "~65%", contexto: "128K", velocidad: "Lento",       elegido: false },
+      { modelo: "Qwen3-Coder-Next 80B MoE",  ram: "~38GB", swe: "70.6%",contexto: "256K", velocidad: "Rápido (MoE)",elegido: true  },
+    ],
+    estado: [
+      { tarea: "Comprar Mac Mini M4 Pro 48GB",                     hecho: false },
+      { tarea: "Instalar n8n en local",                             hecho: false },
+      { tarea: "Instalar Ollama + Qwen3-Coder-Next 80B MoE",       hecho: false },
+      { tarea: "Conectar Notion con n8n",                           hecho: false },
+      { tarea: "Configurar flujo de mañana (hoja de ruta)",         hecho: false },
+      { tarea: "Configurar agente de codificación",                 hecho: false },
+      { tarea: "Configurar Git + push automático",                  hecho: false },
+      { tarea: "Configurar PC 2 para tests automáticos en push",    hecho: false },
+      { tarea: "Configurar generación de informes (Notion + Power BI)", hecho: false },
+      { tarea: "Configurar grabación de pantalla",                  hecho: false },
+      { tarea: "Integrar API de miniaturas (PC 2)",                 hecho: true  },
+      { tarea: "Configurar subida automática a YouTube",            hecho: false },
     ],
   },
 };
